@@ -25,6 +25,8 @@ export default function LoginPage() {
         const { data } = res;
         const { access_token } = data;
         localStorage.setItem("access_token", access_token);
+
+        router.push("/profile");
       },
     },
   });
