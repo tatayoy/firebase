@@ -1,0 +1,20 @@
+<svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="24" height="28" fill="#E5E5E5"/>
+<g id="Halaman Admin Dashboard" clip-path="url(#clip0_0_1)">
+<rect width="1440" height="1024" transform="translate(-30 -68)" fill="white"/>
+<rect id="Rectangle 4" x="-51.5" y="-8.5" width="271" height="964" fill="#F2F2F2" stroke="#E0E0E0"/>
+<g id="Group 2">
+<g id="Group 3">
+<g id="home 1">
+<path id="Vector" d="M3 10.3847L12 2.30774L21 10.3847V23.077C21 23.689 20.7893 24.276 20.4142 24.7088C20.0391 25.1415 19.5304 25.3847 19 25.3847H5C4.46957 25.3847 3.96086 25.1415 3.58579 24.7088C3.21071 24.276 3 23.689 3 23.077V10.3847Z" stroke="#2F80ED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M9 25.3847V13.8462H15V25.3847" stroke="#2F80ED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_1">
+<rect width="1440" height="1024" fill="white" transform="translate(-30 -68)"/>
+</clipPath>
+</defs>
+</svg>
