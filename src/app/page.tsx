@@ -20,7 +20,10 @@ export default function LoginPage() {
   const { mutate: loginUser, isPending: isPendingLogin } = useSignIn({
     options: {
       onSuccess: (res: any) => {
-        const { access_token } = res;
+        console.log("@res", res);
+
+        const { data } = res;
+        const { access_token } = data;
         localStorage.setItem("access_token", access_token);
       },
     },
