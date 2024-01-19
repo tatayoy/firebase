@@ -5,14 +5,13 @@ export async function client(
   { data, method = "GET", params, headers: customHeaders, ...customConfig }: any = {}
 ) {
   const token = localStorage.getItem("access_token");
-  const apiURL = process.env.REACT_APP_URL;
+  const apiURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const config = {
     url: `${apiURL}${endpoint}`,
     method: method || (data ? "POST" : "GET"),
     headers: {
       "Content-Type": data ? "application/json" : undefined,
-      "x-api-key": process.env.REACT_APP_API_KEY,
       ...(token && { Authorization: `Bearer ${token}` }),
       ...customHeaders,
     },
@@ -33,6 +32,6 @@ export async function client(
       return response;
     })
     .catch((e: any) => {
-      window.alert(e.response.data);
+      window.alert(e.response.data.message?.[0]);
     });
 }

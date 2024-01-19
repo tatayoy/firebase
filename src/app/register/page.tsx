@@ -3,37 +3,34 @@ import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
-import { useSignIn } from "@/services/auth/useAuth";
-import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
+import { useRegister } from "@/services/auth/useAuth";
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
       email: "",
       password: "",
+      confirm_password: "",
+      username: "",
     },
   });
 
-  const { mutate: loginUser, isPending: isPendingLogin } = useSignIn({
+  const { mutate: registerUser, isPending: isPendingRegister } = useRegister({
     options: {
       onSuccess: (res: any) => {
-        const { access_token } = res;
-        localStorage.setItem("access_token", access_token);
+        console.log(res);
       },
     },
   });
 
-  const onSubmit = (data: any) => {
-    const { password, email } = data;
+  const onSubmit = async (data: any) => {
+    const { email, password, username } = data;
 
-    loginUser({
-      password,
-      email: email.includes("@") ? email : "",
-      username: !email.includes("@") ? email : "",
-    });
+    registerUser({ email, password, username });
   };
 
   return (
@@ -43,7 +40,7 @@ export default function LoginPage() {
           <div className="h-5/6">
             <div className="p-3.5 flex items-center gap-2">
               <ImageNext
-                onClick={() => router.push("/register")}
+                onClick={() => router.push("/")}
                 src="/back.svg"
                 alt="back"
                 width={10}
@@ -53,13 +50,17 @@ export default function LoginPage() {
             </div>
 
             <div className="p-3.5">
-              <Text label="Login" className="font-bold not-italic text-2xl text-white" />
+              <Text label="Register" className="font-bold not-italic text-2xl text-white" />
             </div>
 
             <Controller
               control={control}
               rules={{
-                required: "Email/Username is required",
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Invalid email address",
+                },
               }}
               name="email"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -73,7 +74,29 @@ export default function LoginPage() {
                   autoComplete="email"
                   required
                   classNameInput="block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                  placeholder="Enter Username/Email"
+                  placeholder="Enter Email"
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                required: "Username is required",
+              }}
+              name="username"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <Input
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  required
+                  classNameInput="mt-4 block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
+                  placeholder="Create Username"
                 />
               )}
             />
@@ -95,7 +118,31 @@ export default function LoginPage() {
                   autoComplete="password"
                   required
                   classNameInput="mt-4 block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                  placeholder="Enter Password"
+                  placeholder="Create Password"
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                required: "Confirm Password is required",
+                validate: (value) =>
+                  value === control._formValues.password || "The passwords do not match",
+              }}
+              name="confirm_password"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <Input
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="confirm_password"
+                  type="password"
+                  autoComplete="confirm_password"
+                  required
+                  classNameInput="mt-4 block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
+                  placeholder="Confirm Password"
                 />
               )}
             />
@@ -103,18 +150,18 @@ export default function LoginPage() {
 
           <div className="h-1/6 flex flex-col justify-end py-5">
             <Button
-              disabled={isPendingLogin}
-              label="Login"
+              disabled={isPendingRegister}
+              label="Register"
               onClick={handleSubmit(onSubmit)}
               type="button"
               className="flex items-center w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm bg-gradient-to-r from-[#62CDCB] to-[#4599DB]"
             />
 
             <div className="flex items-center justify-center gap-2 mt-6">
-              <Text label="No account?" className="text-white text-xs font-medium" />
+              <Text label="Have an account?" className="text-white text-xs font-medium" />
               <Text
-                onClick={() => router.push("/register")}
-                label="Register here"
+                onClick={() => router.push("/")}
+                label="Login here"
                 className="text-[#94783E] text-xs font-medium cursor-pointer"
               />
             </div>
