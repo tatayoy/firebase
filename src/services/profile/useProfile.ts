@@ -15,7 +15,7 @@ const useProfile = ({ query = {}, options }: any = {}) => {
     queryKey: ["list-music", query],
     queryFn: () => fetchProfile({ query }),
     ...options,
-  });
+  }) as any;
 };
 
 function useCreateProfile({ options }: any) {
