@@ -3,14 +3,9 @@ import Image from "next/image";
 
 const ImageNext = ({ onClick, className, src, alt, width, height }: ImageInterface) => {
   return (
-    <Image
-      width={width}
-      height={height}
-      onClick={onClick}
-      className={className}
-      src={src}
-      alt={alt}
-    />
+    <div className={className} onClick={onClick}>
+      <Image width={width} height={height} src={src} alt={alt} />
+    </div>
   );
 };
 

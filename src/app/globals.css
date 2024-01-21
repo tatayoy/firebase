@@ -8,4 +8,10 @@
     @apply bg-no-repeat;
     @apply bg-cover bg-center;
   }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
 }

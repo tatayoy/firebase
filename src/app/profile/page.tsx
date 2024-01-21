@@ -1,37 +1,141 @@
 "use client";
-import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
-import { Controller, useForm } from "react-hook-form";
-import { useRegister } from "@/services/auth/useAuth";
-import { useRouter } from "next/navigation";
 import { useProfile } from "@/services/profile/useProfile";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Control, Controller, FieldValues, set, useForm } from "react-hook-form";
+
+interface CardComponentInterface {
+  title: string;
+  control: Control<
+    { name: string; birthday: string; height: number; weight: number; interests: never[] },
+    any
+  >;
+  desc: string;
+  handleChangeImageBase64: (e: any, type: string) => void;
+  isEditAbout?: boolean;
+  isEditInterest?: boolean;
+  setIsEditAbout?: Dispatch<SetStateAction<boolean>>;
+  setIsEditInterest?: Dispatch<SetStateAction<boolean>>;
+  onClick: () => void;
+  fieldsAbout?:
+    | fieldsAboutOjbInterface[]
+    | (
+        | { label: string; name: string; type: string; placeholder: string; option?: undefined }
+        | {
+            label: string;
+            option: { label: string; value: string }[];
+            name: string;
+            type: string;
+            placeholder: string;
+          }
+      )[]
+    | undefined;
+}
+
+interface fieldsAboutOjbInterface {
+  label: string;
+  option?: { label: string; value: string }[] | undefined;
+  name: "name" | "birthday" | "height" | "weight" | "interests";
+  type: string;
+  placeholder: string;
+}
+
+interface FieldsAboutInterface {
+  control: Control<
+    { name: string; birthday: string; height: number; weight: number; interests: never[] },
+    any
+  >;
+  fieldsAbout:
+    | fieldsAboutOjbInterface[]
+    | (
+        | { label: string; name: string; type: string; placeholder: string; option?: undefined }
+        | {
+            label: string;
+            option: { label: string; value: string }[];
+            name: string;
+            type: string;
+            placeholder: string;
+          }
+      )[]
+    | undefined;
+}
 
 export default function ProfilePage() {
+  const [isEditAbout, setIsEditAbout] = useState(false);
+  const [isEditInterest, setIsEditInterest] = useState(false);
+
   const router = useRouter();
+
+  const fieldsAbout = [
+    {
+      label: "Display name:",
+      name: "name",
+      type: "text",
+      placeholder: "Enter name",
+    },
+    {
+      label: "Gender:",
+      option: [
+        {
+          label: "Male",
+          value: "male",
+        },
+        {
+          label: "Female",
+          value: "female",
+        },
+      ],
+      name: "gender",
+      type: "select",
+      placeholder: "Select gender",
+    },
+    {
+      label: "Birthday:",
+      name: "birthday",
+      type: "date",
+      placeholder: "DD MM YYYY",
+    },
+    {
+      label: "Horoscope:",
+      name: "horosc",
+      type: "text",
+      placeholder: "Enter horoscope",
+    },
+    {
+      label: "Zodiac:",
+      name: "zodiac",
+      type: "text",
+      placeholder: "Enter zodiac",
+    },
+    {
+      label: "Height:",
+      name: "height",
+      type: "number",
+      placeholder: "Enter height",
+    },
+    {
+      label: "Weight:",
+      name: "weight",
+      type: "number",
+      placeholder: "Enter weight",
+    },
+  ];
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      email: "",
-      password: "",
-      confirm_password: "",
-      username: "",
-    },
-  });
-
-  const { mutate: registerUser, isPending: isPendingRegister } = useRegister({
-    options: {
-      onSuccess: (res: any) => {
-        console.log(res);
-      },
+      name: "",
+      birthday: "",
+      height: 0,
+      weight: 0,
+      interests: [],
     },
   });
 
   const onSubmit = async (data: any) => {
     const { email, password, username } = data;
-
-    registerUser({ email, password, username });
   };
 
   const {
@@ -44,10 +148,40 @@ export default function ProfilePage() {
     },
   });
 
+  const handleChangeImageBase64 = (e: any, type: string) => {
+    let url = e.target.value;
+    let ext = url.substring(url.lastIndexOf(".") + 1).toLowerCase();
+
+    if (
+      e.target.files &&
+      e.target.files[0] &&
+      (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")
+    ) {
+      let reader = new FileReader();
+
+      reader.onload = function (e) {
+        switch (type) {
+          case "banner":
+            localStorage.setItem("banner", reader.result as any);
+            break;
+          case "avatar":
+            localStorage.setItem("avatar", reader.result as any);
+            break;
+          default:
+            break;
+        }
+
+        window.location.reload();
+      };
+
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
   return (
     <section>
       <div className="flex min-h-full flex-1 flex-col justify-center lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm h-dvh bg-gradient-radial-base px-5">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm h-dvh bg-[#09141A] px-5 overflow-auto">
           {isPendingProfile ? (
             <Text
               label="Loading..."
@@ -55,149 +189,102 @@ export default function ProfilePage() {
             />
           ) : (
             <div>
-              <div className="h-5/6">
-                <div className="p-3.5 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ImageNext
-                      onClick={() => router.push("/")}
-                      src="/back.svg"
-                      alt="back"
-                      width={10}
-                      height={10}
-                    />
-                    <Text label="Back" className="font-bold not-italic text-sm text-white" />
-                  </div>
-
-                  <Text
-                    label={`@${dataProfile?.data?.data?.username}`}
-                    className="font-bold not-italic text-sm text-white"
-                  />
-
+              <div className="p-2 flex items-center justify-between">
+                <div
+                  onClick={() => {
+                    const confirm = window.confirm("Are you want to log out ?");
+                    if (confirm) {
+                      localStorage.removeItem("access_token");
+                      router.push("/");
+                    }
+                  }}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <ImageNext
-                    src="/setting.svg"
-                    alt="setting"
-                    className="cursor-pointer"
-                    width={20}
-                    height={20}
+                    onClick={() => router.push("/")}
+                    src="/back.svg"
+                    alt="back"
+                    width={10}
+                    height={10}
+                    className="w-auto"
                   />
+                  <Text label="Back" className="font-bold not-italic text-sm text-white" />
                 </div>
 
-                <div className="p-3.5">
-                  <Text label="Register" className="font-bold not-italic text-2xl text-white" />
-                </div>
-
-                <Controller
-                  control={control}
-                  rules={{
-                    required: "Email is required",
-                    pattern: {
-                      value: /^\S+@\S+$/i,
-                      message: "Invalid email address",
-                    },
-                  }}
-                  name="email"
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <Input
-                      onChange={onChange}
-                      error={error}
-                      onBlur={onBlur}
-                      value={value}
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      classNameInput="block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                      placeholder="Enter Email"
-                    />
-                  )}
+                <Text
+                  label={`@${dataProfile?.data?.data?.username}`}
+                  className="font-bold not-italic text-sm text-white"
                 />
 
-                <Controller
-                  control={control}
-                  rules={{
-                    required: "Username is required",
-                  }}
-                  name="username"
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <Input
-                      onChange={onChange}
-                      error={error}
-                      onBlur={onBlur}
-                      value={value}
-                      name="username"
-                      type="text"
-                      autoComplete="username"
-                      required
-                      classNameInput="mt-4 block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                      placeholder="Create Username"
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  rules={{
-                    required: "Password is required",
-                  }}
-                  name="password"
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <Input
-                      onChange={onChange}
-                      error={error}
-                      onBlur={onBlur}
-                      value={value}
-                      name="password"
-                      type="password"
-                      autoComplete="password"
-                      required
-                      classNameInput="mt-4 block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                      placeholder="Create Password"
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  rules={{
-                    required: "Confirm Password is required",
-                    validate: (value) =>
-                      value === control._formValues.password || "The passwords do not match",
-                  }}
-                  name="confirm_password"
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <Input
-                      onChange={onChange}
-                      error={error}
-                      onBlur={onBlur}
-                      value={value}
-                      name="confirm_password"
-                      type="password"
-                      autoComplete="confirm_password"
-                      required
-                      classNameInput="mt-4 block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                      placeholder="Confirm Password"
-                    />
-                  )}
+                <ImageNext
+                  src={"/setting.svg"}
+                  alt="setting"
+                  className="cursor-pointer w-auto"
+                  width={20}
+                  height={20}
                 />
               </div>
 
-              <div className="h-1/6 flex flex-col justify-end py-5">
-                <Button
-                  disabled={isPendingRegister}
-                  label="Register"
-                  onClick={handleSubmit(onSubmit)}
-                  type="button"
-                  className="flex items-center w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm bg-gradient-to-r from-[#62CDCB] to-[#4599DB]"
-                />
+              <div className="p-x-0 py-6">
+                {/* Card Start */}
+                <div className="relative bg-[#162329] rounded-md h-[190px] w-full">
+                  {localStorage.getItem("banner") && (
+                    <img
+                      src={localStorage.getItem("banner") as string}
+                      alt="setting"
+                      className=" h-[190px] w-full rounded-md bg-cover object-cover object-center bg-center bg-no-repeat"
+                    />
+                  )}
 
-                <div className="flex items-center justify-center gap-2 mt-6">
-                  <Text label="Have an account?" className="text-white text-xs font-medium" />
+                  <label className="cursor-pointer absolute top-2 right-2">
+                    <ImageNext
+                      src="/pencil.svg"
+                      className="shadow-2xl drop-shadow-xl"
+                      alt="pencil"
+                      width={20}
+                      height={20}
+                    />
+
+                    <input
+                      onChange={(e: any) => handleChangeImageBase64(e, "banner")}
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      className="sr-only"
+                    />
+                  </label>
+
                   <Text
-                    onClick={() => router.push("/")}
-                    label="Login here"
-                    className="text-[#94783E] text-xs font-medium cursor-pointer"
+                    label={`@${dataProfile?.data?.data?.username}`}
+                    className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white absolute bottom-2 left-2"
                   />
                 </div>
+                {/* Card End */}
+
+                {/* Card Start */}
+                <CardComponent
+                  onClick={() => setIsEditAbout(true)}
+                  title="About"
+                  desc="Add in your your to help others know you better"
+                  isEditAbout={isEditAbout}
+                  setIsEditAbout={setIsEditAbout}
+                  handleChangeImageBase64={handleChangeImageBase64}
+                  control={control}
+                  fieldsAbout={fieldsAbout}
+                />
+                {/* Card End */}
+
+                {/* Card Start */}
+                <CardComponent
+                  onClick={() => router.push("/interest")}
+                  title="Interest"
+                  desc="Add in your interest to find a better match"
+                  isEditInterest={isEditInterest}
+                  setIsEditInterest={setIsEditInterest}
+                  handleChangeImageBase64={handleChangeImageBase64}
+                  control={control}
+                />
+                {/* Card End */}
               </div>
             </div>
           )}
@@ -206,3 +293,128 @@ export default function ProfilePage() {
     </section>
   );
 }
+
+export const FieldsAbout = (props: FieldsAboutInterface) => {
+  const { control, fieldsAbout } = props;
+  return (
+    <div>
+      {fieldsAbout?.map((data: fieldsAboutOjbInterface, index: number) => {
+        const { label, placeholder, name, type } = data;
+        return (
+          <div key={index} className="mt-6 grid grid-cols-2 items-center gap-4">
+            <Text
+              label={label}
+              className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-white/30"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                required: "Name is required",
+              }}
+              name={name}
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <Input
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name={name}
+                  type={type}
+                  required
+                  classNameInput="block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
+                  placeholder={placeholder}
+                />
+              )}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export const CardComponent = (props: CardComponentInterface) => {
+  const {
+    title,
+    desc,
+    onClick,
+    isEditAbout,
+    isEditInterest,
+    setIsEditAbout,
+    setIsEditInterest,
+    handleChangeImageBase64,
+    control,
+    fieldsAbout,
+  } = props;
+  return (
+    <div
+      className={`rounded-md ${
+        isEditAbout || isEditInterest ? "h-auto" : "h-[120px]"
+      } w-full p-2 bg-[#0E191F] mt-6`}
+    >
+      {isEditAbout ? (
+        <div>
+          <div className="flex justify-between items-center">
+            <Text
+              label={title}
+              className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white"
+            />
+
+            <Text
+              onClick={() => setIsEditAbout && setIsEditAbout(false)}
+              label="Save & Update"
+              className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-[#94783E] cursor-pointer"
+            />
+          </div>
+
+          <label className="cursor-pointer flex gap-2 mt-4 items-center">
+            <img
+              src={localStorage.getItem("avatar") || "/avatar-placeholder.svg"}
+              alt="avatar-placeholder"
+              className="h-[57px] w-[57px] rounded-lg bg-center bg-no-repeat"
+            />
+
+            <Text
+              label="Add image"
+              className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-white"
+            />
+
+            <input
+              onChange={(e: any) => handleChangeImageBase64(e, "avatar")}
+              id="file-upload-avatar"
+              name="file-upload-avatar"
+              type="file"
+              className="sr-only"
+            />
+          </label>
+
+          <FieldsAbout control={control} fieldsAbout={fieldsAbout} />
+        </div>
+      ) : (
+        <div>
+          <div className="flex justify-between items-center">
+            <Text
+              label={title}
+              className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white"
+            />
+
+            <ImageNext
+              onClick={onClick}
+              src="/pencil.svg"
+              className="shadow-2xl drop-shadow-xl cursor-pointer"
+              alt="pencil"
+              width={20}
+              height={20}
+            />
+          </div>
+
+          <Text
+            label={desc}
+            className="shadow-2xl drop-shadow-xl font-medium not-italic text-sm text-white/50 mt-8"
+          />
+        </div>
+      )}
+    </div>
+  );
+};

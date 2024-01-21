@@ -6,11 +6,12 @@ import Text from "@/components/Text";
 import { Controller, useForm } from "react-hook-form";
 import { useRegister } from "@/services/auth/useAuth";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function RegisterPage() {
   const router = useRouter();
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       email: "",
       password: "",
@@ -22,7 +23,16 @@ export default function RegisterPage() {
   const { mutate: registerUser, isPending: isPendingRegister } = useRegister({
     options: {
       onSuccess: (res: any) => {
-        console.log(res);
+        console.log("@res", res);
+
+        if (res?.data?.message === "User already exists") {
+          alert(res?.data?.message);
+        } else if (res?.data?.message === "User has been created successfully") {
+          alert(res?.data?.message);
+          router.push("/login");
+        }
+
+        reset();
       },
     },
   });
@@ -32,6 +42,18 @@ export default function RegisterPage() {
 
     registerUser({ email, password, username });
   };
+
+  useEffect(() => {
+    const handleCheckIsLogin = () => {
+      const access_token = localStorage.getItem("access_token");
+
+      if (access_token) {
+        router.push("/profile");
+      }
+    };
+
+    handleCheckIsLogin();
+  }, []);
 
   return (
     <section>
@@ -45,6 +67,7 @@ export default function RegisterPage() {
                 alt="back"
                 width={10}
                 height={10}
+                className="w-auto"
               />
               <Text label="Back" className="font-bold not-italic text-sm text-white" />
             </div>
