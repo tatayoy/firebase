@@ -29,7 +29,7 @@ export default function RegisterPage() {
           alert(res?.data?.message);
         } else if (res?.data?.message === "User has been created successfully") {
           alert(res?.data?.message);
-          router.push("/login");
+          router.push("/");
         }
 
         reset();
