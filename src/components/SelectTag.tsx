@@ -23,14 +23,7 @@ const SelectTag = ({
 }: SelectTagInterface) => {
   const [val, setVal] = useState<string[]>(value);
 
-  const children = [];
-  for (let i = 10; i < 36; i += 1) {
-    children.push(
-      <Option key={i.toString(36) + i} test={i}>
-        {i.toString(36) + i}
-      </Option>
-    );
-  }
+  const children: string[] = [];
 
   const tagRender = (props: any) => {
     const { label, closable, onClose } = props;
@@ -79,15 +72,10 @@ const SelectTag = ({
         maxTagTextLength={10}
         value={val}
         onChange={(val: string[], option) => {
-          console.log("change:", val, option);
           setVal(val);
         }}
-        onSelect={(val, option) => {
-          console.log("selected", val, option);
-        }}
-        onDeselect={(val, option) => {
-          console.log("deselected", val, option);
-        }}
+        onSelect={(val, option) => {}}
+        onDeselect={(val, option) => {}}
         tokenSeparators={[","]}
         tagRender={tagRender}
         onBlur={onBlur}
