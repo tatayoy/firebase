@@ -61,6 +61,14 @@ const SelectTag = ({
   return (
     <div>
       <Select
+        dropdownStyle={{
+          backgroundColor: "rgba(217, 217, 217, 0.06)",
+          color: "white",
+          borderRadius: 10,
+          boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+          fontSize: 14,
+          border: "none",
+        }}
         mode="tags"
         style={{
           width: "100%",
