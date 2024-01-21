@@ -327,7 +327,7 @@ export default function ProfilePage() {
   );
 }
 
-export const FieldsAbout = (props: FieldsAboutInterface): FC => {
+export const FieldsAbout = (props: FieldsAboutInterface): any => {
   const { control, fieldsAbout } = props;
   return (
     <div>
@@ -367,7 +367,7 @@ export const FieldsAbout = (props: FieldsAboutInterface): FC => {
   );
 };
 
-export const CardComponent = (props: CardComponentInterface): FC => {
+export const CardComponent = (props: CardComponentInterface): any => {
   const {
     title,
     desc,
