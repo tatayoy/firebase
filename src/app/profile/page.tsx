@@ -1,4 +1,5 @@
 "use client";
+import { CardComponent } from "@/components/CardComponent";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
@@ -7,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState, useEffect, FC } from "react";
 import { Control, Controller, FieldValues, UseFormGetValues, set, useForm } from "react-hook-form";
 
-interface CardComponentInterface {
+export interface CardComponentInterface {
   title: string;
   control: Control<
     { name: string; birthday: string; height: number; weight: number; interests: never[] },
@@ -42,7 +43,7 @@ interface CardComponentInterface {
   }>;
 }
 
-interface fieldsAboutOjbInterface {
+export interface fieldsAboutOjbInterface {
   label: string;
   option?: { label: string; value: string }[] | undefined;
   name: string;
@@ -50,7 +51,7 @@ interface fieldsAboutOjbInterface {
   placeholder: string;
 }
 
-interface FieldsAboutInterface {
+export interface FieldsAboutInterface {
   control: Control<
     { name: string; birthday: string; height: number; weight: number; interests: never[] },
     any
@@ -326,159 +327,3 @@ export default function ProfilePage() {
     </section>
   );
 }
-
-export const FieldsAbout = (props: FieldsAboutInterface): any => {
-  const { control, fieldsAbout } = props;
-  return (
-    <div>
-      {fieldsAbout?.map((data: fieldsAboutOjbInterface, index: number) => {
-        const { label, placeholder, name, type } = data;
-        return (
-          <div key={index} className="mt-6 grid grid-cols-2 items-center gap-4">
-            <Text
-              label={label}
-              className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-white/30"
-            />
-
-            <Controller
-              control={control}
-              rules={{
-                required: "Name is required",
-              }}
-              name={name as "name" | "birthday" | "height" | "weight" | "interests"}
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <Input
-                  onChange={onChange}
-                  error={error}
-                  onBlur={onBlur}
-                  value={value}
-                  name={name}
-                  type={type}
-                  required
-                  classNameInput="block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                  placeholder={placeholder}
-                />
-              )}
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-export const CardComponent = (props: CardComponentInterface): any => {
-  const {
-    title,
-    desc,
-    onClick,
-    isEditAbout,
-    isEditInterest,
-    setIsEditAbout,
-    setIsEditInterest,
-    handleChangeImageBase64,
-    control,
-    fieldsAbout,
-    getValues,
-  } = props;
-
-  return (
-    <div
-      className={`rounded-md ${
-        isEditAbout || (getValues && getValues("interests").length) ? "h-auto" : "h-[120px]"
-      } w-full p-2 bg-[#0E191F] mt-6`}
-    >
-      {isEditAbout ? (
-        <div>
-          <div className="flex justify-between items-center">
-            <Text
-              label={title}
-              className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white"
-            />
-
-            <Text
-              onClick={() => setIsEditAbout && setIsEditAbout(false)}
-              label="Save & Update"
-              className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-[#94783E] cursor-pointer"
-            />
-          </div>
-
-          <label className="cursor-pointer flex gap-2 mt-4 items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={localStorage.getItem("avatar") || "/avatar-placeholder.svg"}
-              alt="avatar-placeholder"
-              className="h-[57px] w-[57px] rounded-lg bg-center bg-no-repeat object-cover object-center"
-            />
-
-            <Text
-              label="Add image"
-              className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-white"
-            />
-
-            <input
-              onChange={(e: any) => handleChangeImageBase64(e, "avatar")}
-              id="file-upload-avatar"
-              name="file-upload-avatar"
-              type="file"
-              className="sr-only"
-            />
-          </label>
-
-          <FieldsAbout control={control} fieldsAbout={fieldsAbout} />
-        </div>
-      ) : getValues && getValues("interests").length ? (
-        <div>
-          <div className="flex justify-between items-center mb-6">
-            <Text
-              label={title}
-              className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white"
-            />
-
-            <ImageNext
-              onClick={onClick}
-              src="/pencil.svg"
-              className="shadow-2xl drop-shadow-xl cursor-pointer"
-              alt="pencil"
-              width={20}
-              height={20}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2 mb-6">
-            {getValues("interests").map((data: string, index: number) => {
-              return (
-                <div key={index} className="rounded-full p-4 bg-white/10 w-fit">
-                  <p className="text-center text-white text-sm">{data}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        <div>
-          <div className="flex justify-between items-center">
-            <Text
-              label={title}
-              className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white"
-            />
-
-            <ImageNext
-              onClick={onClick}
-              src="/pencil.svg"
-              className="shadow-2xl drop-shadow-xl cursor-pointer"
-              alt="pencil"
-              width={20}
-              height={20}
-            />
-          </div>
-
-          <Text
-            label={desc}
-            className="shadow-2xl drop-shadow-xl font-medium not-italic text-sm text-white/50 mt-8"
-          />
-        </div>
-      )}
-    </div>
-  );
-};
