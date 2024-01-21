@@ -4,7 +4,7 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import { useProfile } from "@/services/profile/useProfile";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { Control, Controller, FieldValues, set, useForm } from "react-hook-form";
 
 interface CardComponentInterface {
@@ -178,6 +178,18 @@ export default function ProfilePage() {
     }
   };
 
+  useEffect(() => {
+    const handleCheckIsLogin = () => {
+      const access_token = localStorage.getItem("access_token");
+
+      if (!access_token) {
+        router.push("/");
+      }
+    };
+
+    handleCheckIsLogin();
+  }, []);
+
   return (
     <section>
       <div className="flex min-h-full flex-1 flex-col justify-center lg:px-8">
@@ -228,13 +240,11 @@ export default function ProfilePage() {
               <div className="p-x-0 py-6">
                 {/* Card Start */}
                 <div className="relative bg-[#162329] rounded-md h-[190px] w-full">
-                  {localStorage.getItem("banner") && (
-                    <img
-                      src={localStorage.getItem("banner") as string}
-                      alt="setting"
-                      className=" h-[190px] w-full rounded-md bg-cover object-cover object-center bg-center bg-no-repeat"
-                    />
-                  )}
+                  <img
+                    src={(localStorage.getItem("banner") as string) || "/sample_banner.jpeg"}
+                    alt="setting"
+                    className=" h-[190px] w-full rounded-md bg-cover object-cover object-center bg-center bg-no-repeat"
+                  />
 
                   <label className="cursor-pointer absolute top-2 right-2">
                     <ImageNext
