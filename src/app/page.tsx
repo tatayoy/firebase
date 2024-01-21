@@ -50,6 +50,7 @@ export default function LoginPage() {
     };
 
     handleCheckIsLogin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -10,7 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 export default function InterestinterestinterestPage() {
   const router = useRouter();
 
-  const { control, handleSubmit, reset, setValue } = useForm({
+  const { control, reset, setValue } = useForm({
     defaultValues: {
       interest: [],
     },
@@ -47,6 +47,7 @@ export default function InterestinterestinterestPage() {
     };
 
     handleInterest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

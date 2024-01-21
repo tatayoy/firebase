@@ -55,6 +55,7 @@ const SelectTag = ({
 
   useEffect(() => {
     setVal(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (

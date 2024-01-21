@@ -45,7 +45,7 @@ interface CardComponentInterface {
 interface fieldsAboutOjbInterface {
   label: string;
   option?: { label: string; value: string }[] | undefined;
-  name: "name" | "birthday" | "height" | "weight" | "interests";
+  name: string;
   type: string;
   placeholder: string;
 }
@@ -195,6 +195,7 @@ export default function ProfilePage() {
     };
 
     handleCheckIsLogin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -207,6 +208,7 @@ export default function ProfilePage() {
     };
 
     handleInterest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -259,6 +261,7 @@ export default function ProfilePage() {
               <div className="p-x-0 py-6">
                 {/* Card Start */}
                 <div className="relative bg-[#162329] rounded-md h-[190px] w-full">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={(localStorage.getItem("banner") as string) || "/sample_banner.jpeg"}
                     alt="setting"
@@ -342,7 +345,7 @@ export const FieldsAbout = (props: FieldsAboutInterface) => {
               rules={{
                 required: "Name is required",
               }}
-              name={name}
+              name={name as "name" | "birthday" | "height" | "weight" | "interests"}
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <Input
                   onChange={onChange}
@@ -401,10 +404,11 @@ export const CardComponent = (props: CardComponentInterface) => {
           </div>
 
           <label className="cursor-pointer flex gap-2 mt-4 items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={localStorage.getItem("avatar") || "/avatar-placeholder.svg"}
               alt="avatar-placeholder"
-              className="h-[57px] w-[57px] rounded-lg bg-center bg-no-repeat"
+              className="h-[57px] w-[57px] rounded-lg bg-center bg-no-repeat object-cover object-center"
             />
 
             <Text
