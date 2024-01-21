@@ -4,7 +4,7 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import { useProfile } from "@/services/profile/useProfile";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useState, useEffect, FC } from "react";
 import { Control, Controller, FieldValues, UseFormGetValues, set, useForm } from "react-hook-form";
 
 interface CardComponentInterface {
@@ -327,7 +327,7 @@ export default function ProfilePage() {
   );
 }
 
-export const FieldsAbout = (props: FieldsAboutInterface) => {
+export const FieldsAbout = (props: FieldsAboutInterface): FC => {
   const { control, fieldsAbout } = props;
   return (
     <div>
@@ -367,7 +367,7 @@ export const FieldsAbout = (props: FieldsAboutInterface) => {
   );
 };
 
-export const CardComponent = (props: CardComponentInterface) => {
+export const CardComponent = (props: CardComponentInterface): FC => {
   const {
     title,
     desc,
