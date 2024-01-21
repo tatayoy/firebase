@@ -1,9 +1,9 @@
 import { SelectTagInterface } from "@/interface/SelectTag";
-import Select, { Option } from "rc-select";
-import { useState } from "react";
-import Text from "./Text";
+import Select from "rc-select";
 import "rc-select/assets/index.css";
+import { useEffect, useState } from "react";
 import "./SelectTag.css";
+import Text from "./Text";
 
 const SelectTag = ({
   label,
@@ -21,7 +21,7 @@ const SelectTag = ({
   disabled,
   maxTagCount,
 }: SelectTagInterface) => {
-  const [val, setVal] = useState<string[]>(value);
+  const [val, setVal] = useState<string[]>();
 
   const children: string[] = [];
 
@@ -53,6 +53,10 @@ const SelectTag = ({
     );
   };
 
+  useEffect(() => {
+    setVal(value);
+  }, [value]);
+
   return (
     <div>
       <Select
@@ -73,6 +77,7 @@ const SelectTag = ({
         value={val}
         onChange={(val: string[], option) => {
           setVal(val);
+          localStorage.setItem("interest", JSON.stringify(val));
         }}
         onSelect={(val, option) => {}}
         onDeselect={(val, option) => {}}

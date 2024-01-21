@@ -32,8 +32,6 @@ export async function client(
       return response;
     })
     .catch((e: any) => {
-      console.log("@e?.statusCode", e);
-
       if (e?.response?.status === 500) {
         localStorage.removeItem("access_token");
         window.location.replace("/");

@@ -14,5 +14,5 @@ export interface SelectTagInterface {
   error?: any;
   onChange: ChangeEventHandler<HTMLInputElement>;
   onBlur: FocusEventHandler<HTMLInputElement>;
-  value: string[] | null | undefined;
+  value: string[] | (() => string[]);
 }

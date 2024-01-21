@@ -23,8 +23,6 @@ export default function RegisterPage() {
   const { mutate: registerUser, isPending: isPendingRegister } = useRegister({
     options: {
       onSuccess: (res: any) => {
-        console.log("@res", res);
-
         if (res?.data?.message === "User already exists") {
           alert(res?.data?.message);
         } else if (res?.data?.message === "User has been created successfully") {

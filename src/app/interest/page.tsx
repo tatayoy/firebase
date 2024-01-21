@@ -1,16 +1,16 @@
 "use client";
 import ImageNext from "@/components/Image";
-import Input from "@/components/Input";
 import SelectTag from "@/components/SelectTag";
 import Text from "@/components/Text";
 import { useRegister } from "@/services/auth/useAuth";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export default function InterestinterestinterestPage() {
   const router = useRouter();
 
-  const { control, handleSubmit, reset } = useForm({
+  const { control, handleSubmit, reset, setValue } = useForm({
     defaultValues: {
       interest: [],
     },
@@ -19,8 +19,6 @@ export default function InterestinterestinterestPage() {
   const { mutate: registerUser, isPending: isPendingRegister } = useRegister({
     options: {
       onSuccess: (res: any) => {
-        console.log("@res", res);
-
         if (res?.data?.message === "User already exists") {
           alert(res?.data?.message);
         } else if (res?.data?.message === "User has been created successfully") {
@@ -38,6 +36,18 @@ export default function InterestinterestinterestPage() {
 
     registerUser({ email, password, username });
   };
+
+  useEffect(() => {
+    const handleInterest = () => {
+      const parseInterest = JSON.parse(localStorage.getItem("interest") as string);
+
+      if (parseInterest) {
+        setValue("interest", parseInterest);
+      }
+    };
+
+    handleInterest();
+  }, []);
 
   return (
     <section>
@@ -62,6 +72,7 @@ export default function InterestinterestinterestPage() {
             </div>
 
             <Text
+              onClick={() => router.back()}
               label="Save"
               className="font-bold not-italic text-sm text-[#ABFFFD] cursor-pointer"
             />
@@ -81,18 +92,20 @@ export default function InterestinterestinterestPage() {
               required: "Interest is required",
             }}
             name="interest"
-            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-              <SelectTag
-                onChange={onChange}
-                error={error}
-                onBlur={onBlur}
-                value={value}
-                name="interest"
-                type="text"
-                required
-                placeholder="Create Interest"
-              />
-            )}
+            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => {
+              return (
+                <SelectTag
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="interest"
+                  type="text"
+                  required
+                  placeholder="Create Interest"
+                />
+              );
+            }}
           />
         </div>
       </div>

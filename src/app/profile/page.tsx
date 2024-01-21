@@ -5,7 +5,7 @@ import Text from "@/components/Text";
 import { useProfile } from "@/services/profile/useProfile";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { Control, Controller, FieldValues, set, useForm } from "react-hook-form";
+import { Control, Controller, FieldValues, UseFormGetValues, set, useForm } from "react-hook-form";
 
 interface CardComponentInterface {
   title: string;
@@ -33,6 +33,13 @@ interface CardComponentInterface {
           }
       )[]
     | undefined;
+  getValues?: UseFormGetValues<{
+    name: string;
+    birthday: string;
+    height: number;
+    weight: number;
+    interests: never[];
+  }>;
 }
 
 interface fieldsAboutOjbInterface {
@@ -124,7 +131,7 @@ export default function ProfilePage() {
     },
   ];
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       name: "",
       birthday: "",
@@ -188,6 +195,18 @@ export default function ProfilePage() {
     };
 
     handleCheckIsLogin();
+  }, []);
+
+  useEffect(() => {
+    const handleInterest = () => {
+      const parseInterest = JSON.parse(localStorage.getItem("interest") as string);
+
+      if (parseInterest) {
+        setValue("interests", parseInterest);
+      }
+    };
+
+    handleInterest();
   }, []);
 
   return (
@@ -293,6 +312,7 @@ export default function ProfilePage() {
                   setIsEditInterest={setIsEditInterest}
                   handleChangeImageBase64={handleChangeImageBase64}
                   control={control}
+                  getValues={getValues}
                 />
                 {/* Card End */}
               </div>
@@ -356,11 +376,13 @@ export const CardComponent = (props: CardComponentInterface) => {
     handleChangeImageBase64,
     control,
     fieldsAbout,
+    getValues,
   } = props;
+
   return (
     <div
       className={`rounded-md ${
-        isEditAbout || isEditInterest ? "h-auto" : "h-[120px]"
+        isEditAbout || (getValues && getValues("interests").length) ? "h-auto" : "h-[120px]"
       } w-full p-2 bg-[#0E191F] mt-6`}
     >
       {isEditAbout ? (
@@ -400,6 +422,34 @@ export const CardComponent = (props: CardComponentInterface) => {
           </label>
 
           <FieldsAbout control={control} fieldsAbout={fieldsAbout} />
+        </div>
+      ) : getValues && getValues("interests").length ? (
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <Text
+              label={title}
+              className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white"
+            />
+
+            <ImageNext
+              onClick={onClick}
+              src="/pencil.svg"
+              className="shadow-2xl drop-shadow-xl cursor-pointer"
+              alt="pencil"
+              width={20}
+              height={20}
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2 mb-6">
+            {getValues("interests").map((data: string, index: number) => {
+              return (
+                <div key={index} className="rounded-full p-4 bg-white/10 w-fit">
+                  <p className="text-center text-white text-sm">{data}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : (
         <div>
