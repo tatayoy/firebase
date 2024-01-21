@@ -1,22 +1,18 @@
 "use client";
-import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
+import SelectTag from "@/components/SelectTag";
 import Text from "@/components/Text";
-import { Controller, useForm } from "react-hook-form";
 import { useRegister } from "@/services/auth/useAuth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 export default function InterestinterestinterestPage() {
   const router = useRouter();
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
-      email: "",
-      password: "",
-      confirm_password: "",
-      username: "",
+      interest: [],
     },
   });
 
@@ -51,14 +47,18 @@ export default function InterestinterestinterestPage() {
           <div className="flex items-center justify-between mt-6">
             <div className="flex items-center gap-2">
               <ImageNext
-                onClick={() => router.push("/")}
+                onClick={() => router.back()}
                 src="/back.svg"
                 alt="back"
                 width={10}
                 height={10}
-                className="w-auto"
+                className="w-auto cursor-pointer"
               />
-              <Text label="Back" className="font-bold not-italic text-sm text-white" />
+              <Text
+                onClick={() => router.back()}
+                label="Back"
+                className="font-bold not-italic text-sm text-white cursor-pointer"
+              />
             </div>
 
             <Text
@@ -78,21 +78,19 @@ export default function InterestinterestinterestPage() {
           <Controller
             control={control}
             rules={{
-              required: "Username is required",
+              required: "Interest is required",
             }}
-            name="username"
+            name="interest"
             render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-              <Input
+              <SelectTag
                 onChange={onChange}
                 error={error}
                 onBlur={onBlur}
                 value={value}
-                name="username"
+                name="interest"
                 type="text"
-                autoComplete="username"
                 required
-                classNameInput="mt-8 block w-full bg-white/20 rounded-md border-0 p-3 text-white shadow-sm placeholder:text-white/40 sm:text-sm"
-                placeholder="Create Username"
+                placeholder="Create Interest"
               />
             )}
           />
