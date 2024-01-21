@@ -9,21 +9,16 @@ export const CardComponent = (props: CardComponentInterface): any => {
     desc,
     onClick,
     isEditAbout,
-    isEditInterest,
-    setIsEditAbout,
-    setIsEditInterest,
     handleChangeImageBase64,
     control,
     fieldsAbout,
     getValues,
+    onSubmitAbout,
+    handleSubmit,
   } = props;
 
   return (
-    <div
-      className={`rounded-md ${
-        isEditAbout || (getValues && getValues("interests").length) ? "h-auto" : "h-[120px]"
-      } w-full p-2 bg-[#0E191F] mt-6`}
-    >
+    <div className="rounded-md h-auto w-full p-2 bg-[#0E191F] mt-6">
       {isEditAbout ? (
         <div>
           <div className="flex justify-between items-center">
@@ -33,7 +28,7 @@ export const CardComponent = (props: CardComponentInterface): any => {
             />
 
             <Text
-              onClick={() => setIsEditAbout && setIsEditAbout(false)}
+              onClick={handleSubmit && handleSubmit(onSubmitAbout)}
               label="Save & Update"
               className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-[#94783E] cursor-pointer"
             />
@@ -63,7 +58,7 @@ export const CardComponent = (props: CardComponentInterface): any => {
 
           <FieldsAbout control={control} fieldsAbout={fieldsAbout} />
         </div>
-      ) : getValues && getValues("interests").length ? (
+      ) : getValues && getValues("interests").length && title === "Interests" ? (
         <div>
           <div className="flex justify-between items-center mb-6">
             <Text
@@ -88,6 +83,46 @@ export const CardComponent = (props: CardComponentInterface): any => {
                   <p className="text-center text-white text-sm">{data}</p>
                 </div>
               );
+            })}
+          </div>
+        </div>
+      ) : getValues && getValues() && title === "About" ? (
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <Text
+              label={title}
+              className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white"
+            />
+
+            <ImageNext
+              onClick={onClick}
+              src="/pencil.svg"
+              className="shadow-2xl drop-shadow-xl cursor-pointer"
+              alt="pencil"
+              width={20}
+              height={20}
+            />
+          </div>
+
+          <div className="mb-6">
+            {Object.keys(getValues()).map((data: any, index: number) => {
+              const labelName = getValues() as any;
+
+              if (data !== "interests") {
+                return (
+                  <div key={index} className="flex gap-2 items-center mt-2">
+                    <Text
+                      label={data + " : "}
+                      className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-white/30"
+                    />
+
+                    <Text
+                      label={labelName[data]}
+                      className="shadow-2xl drop-shadow-xl font-medium not-italic text-xs text-white"
+                    />
+                  </div>
+                );
+              }
             })}
           </div>
         </div>

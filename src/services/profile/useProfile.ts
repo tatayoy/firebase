@@ -12,7 +12,7 @@ const fetchProfile = async ({ query = {} }) => {
 
 const useProfile = ({ query = {}, options }: any = {}) => {
   return useQuery({
-    queryKey: ["list-music", query],
+    queryKey: ["profile", query],
     queryFn: () => fetchProfile({ query }),
     ...options,
   }) as any;

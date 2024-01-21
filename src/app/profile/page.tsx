@@ -1,17 +1,68 @@
 "use client";
 import { CardComponent } from "@/components/CardComponent";
 import ImageNext from "@/components/Image";
-import Input from "@/components/Input";
 import Text from "@/components/Text";
-import { useProfile } from "@/services/profile/useProfile";
+import { useProfile, useUpdateProfile } from "@/services/profile/useProfile";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useState, useEffect, FC } from "react";
-import { Control, Controller, FieldValues, UseFormGetValues, set, useForm } from "react-hook-form";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Control,
+  SubmitHandler,
+  UseFormGetValues,
+  UseFormHandleSubmit,
+  useForm,
+} from "react-hook-form";
+
+export interface DTOProfile {
+  name: string;
+  gender: string;
+  birthday: string;
+  horoscope: string;
+  zodiac: string;
+  height: number;
+  weight: number;
+  interests: string[];
+}
+
+export interface OptionInterface {
+  label: string;
+  value: string;
+}
 
 export interface CardComponentInterface {
   title: string;
-  control: Control<
+  handleSubmit?: UseFormHandleSubmit<
     { name: string; birthday: string; height: number; weight: number; interests: never[] },
+    undefined
+  >;
+  onSubmitAbout?:
+    | SubmitHandler<{
+        name: string;
+        birthday: string;
+        height: number;
+        weight: number;
+        interests: never[];
+      }>
+    | SubmitHandler<{
+        name: string;
+        birthday: string;
+        height: number;
+        weight: number;
+        interests: never[];
+      }>
+    | undefined
+    | any;
+  control: Control<
+    {
+      name: string;
+      birthday: string;
+      horosc: string;
+      zodiac: string;
+      gender: string;
+      height: number;
+      weight: number;
+      interests: never[];
+    },
     any
   >;
   desc: string;
@@ -27,7 +78,7 @@ export interface CardComponentInterface {
         | { label: string; name: string; type: string; placeholder: string; option?: undefined }
         | {
             label: string;
-            option: { label: string; value: string }[];
+            option: OptionInterface[];
             name: string;
             type: string;
             placeholder: string;
@@ -37,6 +88,9 @@ export interface CardComponentInterface {
   getValues?: UseFormGetValues<{
     name: string;
     birthday: string;
+    horosc: string;
+    zodiac: string;
+    gender: string;
     height: number;
     weight: number;
     interests: never[];
@@ -45,7 +99,7 @@ export interface CardComponentInterface {
 
 export interface fieldsAboutOjbInterface {
   label: string;
-  option?: { label: string; value: string }[] | undefined;
+  option?: OptionInterface[];
   name: string;
   type: string;
   placeholder: string;
@@ -53,7 +107,16 @@ export interface fieldsAboutOjbInterface {
 
 export interface FieldsAboutInterface {
   control: Control<
-    { name: string; birthday: string; height: number; weight: number; interests: never[] },
+    {
+      name: string;
+      birthday: string;
+      horosc: string;
+      zodiac: string;
+      gender: string;
+      height: number;
+      weight: number;
+      interests: never[];
+    },
     any
   >;
   fieldsAbout:
@@ -62,7 +125,7 @@ export interface FieldsAboutInterface {
         | { label: string; name: string; type: string; placeholder: string; option?: undefined }
         | {
             label: string;
-            option: { label: string; value: string }[];
+            option: OptionInterface[];
             name: string;
             type: string;
             placeholder: string;
@@ -132,29 +195,57 @@ export default function ProfilePage() {
     },
   ];
 
-  const { control, handleSubmit, setValue, getValues } = useForm({
+  const { control, handleSubmit, setValue, getValues, reset, watch } = useForm({
     defaultValues: {
       name: "",
       birthday: "",
+      horosc: "",
+      zodiac: "",
+      gender: "",
       height: 0,
       weight: 0,
       interests: [],
     },
   });
 
-  const onSubmit = async (data: any) => {
-    const { email, password, username } = data;
+  const { mutate: updateUser, isPending: isPendingUpdate } = useUpdateProfile({
+    options: {
+      onSuccess: () => {
+        reset();
+      },
+    },
+  });
+
+  const onSubmitAbout = (data: any) => {
+    updateUser({ ...data, height: Number(data.height), weight: Number(data.weight) });
+    setIsEditAbout(false);
+
+    refetchProfile();
   };
 
   const {
     data: dataProfile,
     isPending: isPendingProfile,
     refetch: refetchProfile,
-  } = useProfile({
-    options: {
-      onSuccess: () => {},
-    },
-  });
+    isSuccess: isSuccessProfile,
+  } = useProfile();
+
+  useEffect(() => {
+    const handlePopulateData = () => {
+      if (isSuccessProfile) {
+        setValue("name", dataProfile?.data?.data?.name);
+        setValue("birthday", dataProfile?.data?.data?.birthday);
+        setValue("horosc", dataProfile?.data?.data?.horoscope);
+        setValue("zodiac", dataProfile?.data?.data?.zodiac);
+        setValue("gender", dataProfile?.data?.data?.gender);
+        setValue("height", dataProfile?.data?.data?.height);
+        setValue("weight", dataProfile?.data?.data?.weight);
+        setValue("interests", dataProfile?.data?.data?.interests);
+      }
+    };
+
+    handlePopulateData();
+  }, [dataProfile, isSuccessProfile]);
 
   const handleChangeImageBase64 = (e: any, type: string) => {
     let url = e.target.value;
@@ -216,7 +307,7 @@ export default function ProfilePage() {
     <section>
       <div className="flex min-h-full flex-1 flex-col justify-center lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm h-dvh bg-[#09141A] px-5 overflow-auto">
-          {isPendingProfile ? (
+          {isPendingProfile || isPendingUpdate ? (
             <Text
               label="Loading..."
               className="font-bold not-italic text-2xl text-white text-center mt-6"
@@ -304,6 +395,9 @@ export default function ProfilePage() {
                   handleChangeImageBase64={handleChangeImageBase64}
                   control={control}
                   fieldsAbout={fieldsAbout}
+                  onSubmitAbout={onSubmitAbout}
+                  handleSubmit={handleSubmit}
+                  getValues={getValues}
                 />
                 {/* Card End */}
 
