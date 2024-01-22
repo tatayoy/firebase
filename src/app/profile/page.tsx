@@ -233,7 +233,9 @@ export default function ProfilePage() {
       ...data,
       height: Number(data.height),
       weight: Number(data.weight),
-      interests: JSON.parse(localStorage.getItem("interest") as string),
+      interests: localStorage.getItem("interest")
+        ? JSON.parse(localStorage.getItem("interest") as string)
+        : [],
     });
   };
 
@@ -249,6 +251,8 @@ export default function ProfilePage() {
       setValue("height", dataProfile?.data?.data?.height);
       setValue("weight", dataProfile?.data?.data?.weight);
       setValue("interests", dataProfile?.data?.data?.interests);
+
+      localStorage.setItem("interest", JSON.stringify(dataProfile?.data?.data?.interests || []));
     };
 
     handlePopulateData();
@@ -299,7 +303,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const handleInterest = () => {
-      const parseInterest = JSON.parse(localStorage.getItem("interest") as string);
+      const parseInterest = localStorage.getItem("interest")
+        ? JSON.parse(localStorage.getItem("interest") as string)
+        : [];
 
       if (parseInterest) {
         setValue("interests", parseInterest);

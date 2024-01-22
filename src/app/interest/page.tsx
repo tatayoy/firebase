@@ -31,15 +31,11 @@ export default function InterestinterestinterestPage() {
     },
   });
 
-  const onSubmit = async (data: any) => {
-    const { email, password, username } = data;
-
-    registerUser({ email, password, username });
-  };
-
   useEffect(() => {
     const handleInterest = () => {
-      const parseInterest = JSON.parse(localStorage.getItem("interest") as string);
+      const parseInterest = localStorage.getItem("interest")
+        ? JSON.parse(localStorage.getItem("interest") as string)
+        : [];
 
       if (parseInterest) {
         setValue("interest", parseInterest);
