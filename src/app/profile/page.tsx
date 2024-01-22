@@ -222,7 +222,8 @@ export default function ProfilePage() {
   const { mutate: updateUser, isPending: isPendingUpdate } = useUpdateProfile({
     options: {
       onSuccess: () => {
-        reset();
+        setIsEditAbout(false);
+        refetchProfile();
       },
     },
   });
@@ -234,9 +235,6 @@ export default function ProfilePage() {
       weight: Number(data.weight),
       interests: JSON.parse(localStorage.getItem("interest") as string),
     });
-    setIsEditAbout(false);
-
-    refetchProfile();
   };
 
   const { data: dataProfile, isPending: isPendingProfile, refetch: refetchProfile } = useProfile();
@@ -247,7 +245,7 @@ export default function ProfilePage() {
       setValue("birthday", dataProfile?.data?.data?.birthday);
       setValue("horosc", dataProfile?.data?.data?.horoscope);
       setValue("zodiac", dataProfile?.data?.data?.zodiac);
-      setValue("gender", dataProfile?.data?.data?.gender);
+      setValue("gender", "Male");
       setValue("height", dataProfile?.data?.data?.height);
       setValue("weight", dataProfile?.data?.data?.weight);
       setValue("interests", dataProfile?.data?.data?.interests);
