@@ -12,9 +12,9 @@ export const CardComponent = (props: CardComponentInterface): any => {
     handleChangeImageBase64,
     control,
     fieldsAbout,
-    getValues,
     onSubmitAbout,
     handleSubmit,
+    watch,
   } = props;
 
   return (
@@ -58,7 +58,7 @@ export const CardComponent = (props: CardComponentInterface): any => {
 
           <FieldsAbout control={control} fieldsAbout={fieldsAbout} />
         </div>
-      ) : getValues && getValues("interests").length && title === "Interests" ? (
+      ) : watch && watch("interests")?.length && title === "Interest" ? (
         <div>
           <div className="flex justify-between items-center mb-6">
             <Text
@@ -77,7 +77,7 @@ export const CardComponent = (props: CardComponentInterface): any => {
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
-            {getValues("interests").map((data: string, index: number) => {
+            {watch("interests").map((data: string, index: number) => {
               return (
                 <div key={index} className="rounded-full p-4 bg-white/10 w-fit">
                   <p className="text-center text-white text-sm">{data}</p>
@@ -86,7 +86,7 @@ export const CardComponent = (props: CardComponentInterface): any => {
             })}
           </div>
         </div>
-      ) : getValues && getValues() && title === "About" ? (
+      ) : watch && watch() && title === "About" ? (
         <div>
           <div className="flex justify-between items-center mb-6">
             <Text
@@ -105,8 +105,8 @@ export const CardComponent = (props: CardComponentInterface): any => {
           </div>
 
           <div className="mb-6">
-            {Object.keys(getValues()).map((data: any, index: number) => {
-              const labelName = getValues() as any;
+            {Object.keys(watch()).map((data: any, index: number) => {
+              const labelName = watch() as any;
 
               if (data !== "interests") {
                 return (

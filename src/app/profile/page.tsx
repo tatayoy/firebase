@@ -10,6 +10,7 @@ import {
   SubmitHandler,
   UseFormGetValues,
   UseFormHandleSubmit,
+  UseFormWatch,
   useForm,
 } from "react-hook-form";
 
@@ -31,6 +32,16 @@ export interface OptionInterface {
 
 export interface CardComponentInterface {
   title: string;
+  watch?: UseFormWatch<{
+    name: string;
+    birthday: string;
+    horosc: string;
+    zodiac: string;
+    gender: string;
+    height: number;
+    weight: number;
+    interests: never[];
+  }>;
   handleSubmit?: UseFormHandleSubmit<
     { name: string; birthday: string; height: number; weight: number; interests: never[] },
     undefined
@@ -201,7 +212,7 @@ export default function ProfilePage() {
       birthday: "",
       horosc: "",
       zodiac: "",
-      gender: "",
+      gender: "Male",
       height: 0,
       weight: 0,
       interests: [],
@@ -217,35 +228,33 @@ export default function ProfilePage() {
   });
 
   const onSubmitAbout = (data: any) => {
-    updateUser({ ...data, height: Number(data.height), weight: Number(data.weight) });
+    updateUser({
+      ...data,
+      height: Number(data.height),
+      weight: Number(data.weight),
+      interests: JSON.parse(localStorage.getItem("interest") as string),
+    });
     setIsEditAbout(false);
 
     refetchProfile();
   };
 
-  const {
-    data: dataProfile,
-    isPending: isPendingProfile,
-    refetch: refetchProfile,
-    isSuccess: isSuccessProfile,
-  } = useProfile();
+  const { data: dataProfile, isPending: isPendingProfile, refetch: refetchProfile } = useProfile();
 
   useEffect(() => {
     const handlePopulateData = () => {
-      if (isSuccessProfile) {
-        setValue("name", dataProfile?.data?.data?.name);
-        setValue("birthday", dataProfile?.data?.data?.birthday);
-        setValue("horosc", dataProfile?.data?.data?.horoscope);
-        setValue("zodiac", dataProfile?.data?.data?.zodiac);
-        setValue("gender", dataProfile?.data?.data?.gender);
-        setValue("height", dataProfile?.data?.data?.height);
-        setValue("weight", dataProfile?.data?.data?.weight);
-        setValue("interests", dataProfile?.data?.data?.interests);
-      }
+      setValue("name", dataProfile?.data?.data?.name);
+      setValue("birthday", dataProfile?.data?.data?.birthday);
+      setValue("horosc", dataProfile?.data?.data?.horoscope);
+      setValue("zodiac", dataProfile?.data?.data?.zodiac);
+      setValue("gender", dataProfile?.data?.data?.gender);
+      setValue("height", dataProfile?.data?.data?.height);
+      setValue("weight", dataProfile?.data?.data?.weight);
+      setValue("interests", dataProfile?.data?.data?.interests);
     };
 
     handlePopulateData();
-  }, [dataProfile, isSuccessProfile]);
+  }, [dataProfile]);
 
   const handleChangeImageBase64 = (e: any, type: string) => {
     let url = e.target.value;
@@ -398,6 +407,7 @@ export default function ProfilePage() {
                   onSubmitAbout={onSubmitAbout}
                   handleSubmit={handleSubmit}
                   getValues={getValues}
+                  watch={watch}
                 />
                 {/* Card End */}
 
@@ -410,7 +420,7 @@ export default function ProfilePage() {
                   setIsEditInterest={setIsEditInterest}
                   handleChangeImageBase64={handleChangeImageBase64}
                   control={control}
-                  getValues={getValues}
+                  watch={watch}
                 />
                 {/* Card End */}
               </div>
