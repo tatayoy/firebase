@@ -7,6 +7,18 @@ import { useSignIn } from "@/services/auth/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDhhPoaxBEN6SP1q7_XuuTDyNKkfURHE7o",
+  authDomain: "new-project-ebf6b.firebaseapp.com",
+  projectId: "new-project-ebf6b",
+  storageBucket: "new-project-ebf6b.appspot.com",
+  messagingSenderId: "91100142265",
+  appId: "1:91100142265:web:302008100ce5cf97141968",
+  measurementId: "G-WSJ9EWZ3YJ"
+};
 
 export default function LoginPage() {
   const router = useRouter();
@@ -51,6 +63,12 @@ export default function LoginPage() {
 
     handleCheckIsLogin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    console.log("🚀 ~ useEffect ~ analytics:", analytics);
   }, []);
 
   return (
